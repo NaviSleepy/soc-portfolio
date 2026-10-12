@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Layla Drummond | SOC Analyst L1"
+description = "Evidence-led SOC L1 resume portfolio with pink accents, inspectable lab projects, a sanitized resume download, LinkedIn contact, and a source-grounded virtual ambassador."
+version = "1.0.0"
+id = "artifacts/soc-portfolio"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18283
+
+[services.development]
+run = "pnpm --filter @workspace/soc-portfolio run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/soc-portfolio", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/soc-portfolio/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18283"
+BASE_PATH = "/"

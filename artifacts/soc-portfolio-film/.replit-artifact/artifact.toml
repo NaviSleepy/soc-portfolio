@@ -1,0 +1,29 @@
+kind = "video"
+videoAspectRatio = "1:1"
+previewPath = "/soc-portfolio-film/"
+title = "Layla Drummond — Evidence, Not Assumptions"
+description = "A square, pink-and-graphite animated showcase of the SOC L1 portfolio: verified lab evidence, clear communication, and a source-grounded recruiter ambassador."
+version = "1.0.0"
+id = "artifacts/soc-portfolio-film"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/soc-portfolio-film/" ]
+localPort = 21013
+
+[services.development]
+run = "pnpm --filter @workspace/soc-portfolio-film run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/soc-portfolio-film", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/soc-portfolio-film/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21013"
+BASE_PATH = "/soc-portfolio-film/"

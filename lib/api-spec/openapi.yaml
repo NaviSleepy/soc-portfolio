@@ -1,0 +1,109 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /portfolio/evidence:
+    get:
+      operationId: getPortfolioEvidence
+      tags: [portfolio]
+      summary: Read the approved public evidence library
+      responses:
+        "200":
+          description: Public evidence excerpts used by the ambassador
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EvidenceExcerpt"
+  /portfolio/ambassador:
+    post:
+      operationId: askAmbassador
+      tags: [portfolio]
+      summary: Ask a stateless, source-grounded recruiter question
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AmbassadorInput"
+      responses:
+        "200":
+          description: Approved evidence or an explicit unsupported response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmbassadorAnswer"
+        "400":
+          description: Invalid request
+        "403":
+          description: Cross-origin request rejected
+        "429":
+          description: Rate limit reached
+        "503":
+          description: Ambassador temporarily unavailable
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+components:
+  schemas:
+    AmbassadorInput:
+      type: object
+      additionalProperties: false
+      required: [question]
+      properties:
+        question:
+          type: string
+          minLength: 1
+          maxLength: 600
+    EvidenceExcerpt:
+      type: object
+      required: [id, title, text, section]
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        text:
+          type: string
+        section:
+          type: string
+    AmbassadorAnswer:
+      type: object
+      required: [answer, supported, citations]
+      properties:
+        answer:
+          type: string
+        supported:
+          type: boolean
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/EvidenceExcerpt"
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
